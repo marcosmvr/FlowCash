@@ -15,10 +15,16 @@ datasource db {
 }
 
 model Transaction {
-  id              Int      @id @default(autoincrement())
-  amount          Float
-  transactionType String
-  paymentMethod   String
+  id              Int             @id @default(autoincrement())
+  value           Float
+  transactionType TransactionType
+  category        String
+  description     String
   userId          Int
-  timestamp       DateTime @default(now())
+  createdAt       DateTime        @default(now())
+}
+
+enum TransactionType {
+  ENTRADA
+  SAIDA
 }

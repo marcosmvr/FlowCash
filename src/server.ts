@@ -1,6 +1,9 @@
 import { fastify } from 'fastify'
+import { cashRegisterRoute } from './routes/cashRegisterRoutes'
 
 const app = fastify()
+
+app.register(cashRegisterRoute, { prefix: '/cash-register' })
 
 app.listen({ port: 3333 }, function (err, address) {
   if (err) {
