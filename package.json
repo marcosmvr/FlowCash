@@ -1,0 +1,19 @@
+{
+  "name": "controle-de-caixa",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node "
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "fastify": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "typescript": "^5.8.3"
+  }
+}
