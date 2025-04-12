@@ -1,6 +1,8 @@
 import { fastify } from 'fastify'
 import { cashRegisterRoute } from './routes/cashRegisterRoutes'
+import dotenv from 'dotenv'
 
+dotenv.config()
 const app = fastify()
 
 app.register(cashRegisterRoute, { prefix: '/cash-register' })
