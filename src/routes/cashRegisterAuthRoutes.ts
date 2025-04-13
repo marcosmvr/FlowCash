@@ -3,6 +3,8 @@ import { FastifyInstance } from 'fastify'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
+import { verifyJWT } from '../middlewares/verifyJWT'
+import { onlyAdmin } from '../middlewares/onlyAdmin'
 
 const prisma = new PrismaClient()
 
@@ -12,10 +14,11 @@ export async function authRoutes(app: FastifyInstance) {
       name: z.string().min(3),
       email: z.string().email(),
       password: z.string().min(6),
+      role: z.enum(['ADMIN', 'FUNCIONARIO']).optional().default('FUNCIONARIO'),
     })
 
     try {
-      const { name, email, password } = registerBody.parse(request.body)
+      const { name, email, password, role } = registerBody.parse(request.body)
 
       const hashedPassword = await bcrypt.hash(password, 10)
 
@@ -24,6 +27,7 @@ export async function authRoutes(app: FastifyInstance) {
           name,
           email,
           password: hashedPassword,
+          role,
           createdAt: new Date(),
         },
       })
@@ -54,9 +58,13 @@ export async function authRoutes(app: FastifyInstance) {
         return reply.status(400).send({ message: 'Email ou senha inválidos' })
       }
 
-      const token = jwt.sign({ userId: user.id }, 'seu-segredo-aqui', {
-        expiresIn: '1h',
-      })
+      const token = jwt.sign(
+        { userId: user.id, email: user.email, role: user.role },
+        'seu-segredo-aqui',
+        {
+          expiresIn: '1h',
+        },
+      )
 
       reply.status(200).send({ token })
     } catch (error) {
@@ -64,4 +72,18 @@ export async function authRoutes(app: FastifyInstance) {
       reply.status(500).send({ message: 'Erro ao realizar login' })
     }
   })
+
+  app.get(
+    '/users',
+    { preHandler: [verifyJWT, onlyAdmin] },
+    async (request, reply) => {
+      try {
+        const users = await prisma.user.findMany()
+        return reply.status(200).send(users)
+      } catch (error) {
+        console.error('Erro: ', error)
+        reply.status(500).send({ error: 'Erro ao listar usuários' })
+      }
+    },
+  )
 }

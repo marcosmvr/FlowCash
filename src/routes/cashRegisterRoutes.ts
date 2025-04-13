@@ -1,6 +1,8 @@
 import { PrismaClient } from '../prisma/generated/prisma/'
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
+import { verifyJWT } from '../middlewares/verifyJWT'
+import { onlyAdmin } from '../middlewares/onlyAdmin'
 
 const prisma = new PrismaClient()
 
@@ -52,13 +54,17 @@ export async function cashRegisterRoute(app: FastifyInstance) {
     }
   })
 
-  app.get('/transactions', async (request, reply) => {
-    try {
-      const transactions = await prisma.transaction.findMany()
-      return reply.status(200).send(transactions)
-    } catch (error) {
-      console.error('Erro: ', error)
-      reply.status(500).send({ error: 'Erro ao listar transações' })
-    }
-  })
+  app.get(
+    '/transactions',
+    { preHandler: [verifyJWT, onlyAdmin] },
+    async (request, reply) => {
+      try {
+        const transactions = await prisma.transaction.findMany()
+        return reply.status(200).send(transactions)
+      } catch (error) {
+        console.error('Erro: ', error)
+        reply.status(500).send({ error: 'Erro ao listar transações' })
+      }
+    },
+  )
 }

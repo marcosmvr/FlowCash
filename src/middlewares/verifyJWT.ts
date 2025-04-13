@@ -16,6 +16,7 @@ export const verifyJWT = async (
     const decoded = jwt.verify(token, 'seu-segredo-aqui') as {
       userId: number
       email: string
+      role: 'ADMIN' | 'FUNCIONARIO'
     }
     request.user = decoded
 
