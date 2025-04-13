@@ -9,7 +9,7 @@ const prisma = new PrismaClient()
 export async function authRoutes(app: FastifyInstance) {
   app.post('/register', async (request, reply) => {
     const registerBody = z.object({
-      name: z.string(),
+      name: z.string().min(3),
       email: z.string().email(),
       password: z.string().min(6),
     })

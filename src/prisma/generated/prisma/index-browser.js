@@ -122,7 +122,8 @@ exports.Prisma.UserScalarFieldEnum = {
   name: 'name',
   email: 'email',
   password: 'password',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  role: 'role'
 };
 
 exports.Prisma.TransactionScalarFieldEnum = {
@@ -144,6 +145,11 @@ exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 };
+exports.Role = exports.$Enums.Role = {
+  ADMIN: 'ADMIN',
+  FUNCIONARIO: 'FUNCIONARIO'
+};
+
 exports.TransactionType = exports.$Enums.TransactionType = {
   ENTRADA: 'ENTRADA',
   SAIDA: 'SAIDA'

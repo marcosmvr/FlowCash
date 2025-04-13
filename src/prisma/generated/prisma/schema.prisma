@@ -14,8 +14,14 @@ model User {
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
+  role      Role     @default(FUNCIONARIO)
 
   transactions Transaction[]
+}
+
+enum Role {
+  ADMIN
+  FUNCIONARIO
 }
 
 model Transaction {
