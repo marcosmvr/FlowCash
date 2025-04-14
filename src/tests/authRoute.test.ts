@@ -1,7 +1,6 @@
 import { fastify } from 'fastify'
 import { authRoutes } from '../routes/cashRegisterAuthRoutes'
 import supertest from 'supertest'
-import { date } from 'zod'
 
 describe('Auth Routes', () => {
   const app = fastify()
