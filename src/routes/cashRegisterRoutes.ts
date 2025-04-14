@@ -1,8 +1,10 @@
 import { PrismaClient } from '../prisma/generated/prisma/'
-import { FastifyInstance } from 'fastify'
+import { FastifyInstance, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 import { verifyJWT } from '../middlewares/verifyJWT'
 import { onlyAdmin } from '../middlewares/onlyAdmin'
+import { filterByDateAndCategory } from '../middlewares/filterByDateAndCategory'
+import { TransactionQuery } from '../middlewares/transactionQuery'
 
 const prisma = new PrismaClient()
 
@@ -56,10 +58,15 @@ export async function cashRegisterRoute(app: FastifyInstance) {
 
   app.get(
     '/transactions',
-    { preHandler: [verifyJWT, onlyAdmin] },
-    async (request, reply) => {
+    { preHandler: [verifyJWT, onlyAdmin, filterByDateAndCategory] },
+    async (
+      request: FastifyRequest<{ Querystring: TransactionQuery }>, // Tipagem explícita
+      reply,
+    ) => {
       try {
-        const transactions = await prisma.transaction.findMany()
+        const transactions = await prisma.transaction.findMany({
+          where: request.filter, // Aqui o filtro é passado corretamente
+        })
         return reply.status(200).send(transactions)
       } catch (error) {
         console.error('Erro: ', error)

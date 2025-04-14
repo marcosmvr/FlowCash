@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 import { verifyJWT } from '../middlewares/verifyJWT'
 import { onlyAdmin } from '../middlewares/onlyAdmin'
+import { filterByDateAndCategory } from '../middlewares/filterByDateAndCategory'
 
 const prisma = new PrismaClient()
 
@@ -75,7 +76,7 @@ export async function authRoutes(app: FastifyInstance) {
 
   app.get(
     '/users',
-    { preHandler: [verifyJWT, onlyAdmin] },
+    { preHandler: [verifyJWT, onlyAdmin, filterByDateAndCategory] },
     async (request, reply) => {
       try {
         const users = await prisma.user.findMany()

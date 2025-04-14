@@ -1,8 +1,9 @@
 import { FastifyRequest } from 'fastify'
+import { TransactionQuery } from '../middlewares/transactionQuery'
 
 declare module 'fastify' {
   interface FastifyRequest {
-    filter?: any
+    filter?: TransactionQuery
     user: {
       userId: number
       email: string
