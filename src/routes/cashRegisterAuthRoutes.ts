@@ -59,9 +59,11 @@ export async function authRoutes(app: FastifyInstance) {
         return reply.status(400).send({ message: 'Email ou senha inválidos' })
       }
 
+      const secretKey = process.env.JWT_SECRET
+
       const token = jwt.sign(
         { userId: user.id, email: user.email, role: user.role },
-        'seu-segredo-aqui',
+        process.env.JWT_SECRET_KEY as string,
         {
           expiresIn: '1h',
         },
