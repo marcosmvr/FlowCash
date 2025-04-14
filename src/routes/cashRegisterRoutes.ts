@@ -59,13 +59,11 @@ export async function cashRegisterRoute(app: FastifyInstance) {
   app.get(
     '/transactions',
     { preHandler: [verifyJWT, onlyAdmin, filterByDateAndCategory] },
-    async (
-      request: FastifyRequest<{ Querystring: TransactionQuery }>, // Tipagem explícita
-      reply,
-    ) => {
+    async (request, reply) => {
       try {
+        console.log(request.filter)
         const transactions = await prisma.transaction.findMany({
-          where: request.filter, // Aqui o filtro é passado corretamente
+          where: request.filter,
         })
         return reply.status(200).send(transactions)
       } catch (error) {

@@ -10,11 +10,11 @@ export const filterByDateAndCategory: preHandlerHookHandler = async (
   const whereConditions: any = {}
 
   if (startDate) {
-    whereConditions.date = { gte: new Date(startDate) }
+    whereConditions.createdAt = { gte: new Date(startDate) }
   }
 
   if (endDate) {
-    whereConditions.date = { ...whereConditions.date, lte: new Date(endDate) }
+    whereConditions.createdAt = { ...whereConditions.date, lte: new Date(endDate) }
   }
 
   if (category) {
