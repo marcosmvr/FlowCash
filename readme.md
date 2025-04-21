@@ -1,6 +1,3 @@
-Perfeito! Aqui está o **README.md profissional e personalizado** com o seu nome de usuário e o nome do repositório ajustados:
-
----
 
 # Controle Financeiro Diário
 
