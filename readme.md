@@ -49,8 +49,6 @@ createdAt: Date
 | Banco de Dados | PostgreSQL com Prisma ORM                                           |
 | Autenticação   | JWT                                                                 |
 | Validações     | Zod                                                                 |
-| Front-end      | React + Tailwind CSS *(ou HTML/CSS puro para versão inicial)*       |
-| Deploy         | Railway (back-end) + Vercel (front-end)                             |
 
 ---
 
