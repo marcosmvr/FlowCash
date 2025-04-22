@@ -1,119 +1,162 @@
+# 📊 Controle de Caixa API
 
-# Controle Financeiro Diário
+![Node.js](https://img.shields.io/badge/Node.js-18.x-green)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
+![Fastify](https://img.shields.io/badge/Fastify-4.x-lightgrey)
+![Prisma](https://img.shields.io/badge/Prisma-5.x-orange)
+![Jest](https://img.shields.io/badge/Jest-29.x-red)
+![Swagger](https://img.shields.io/badge/Swagger-UI-green) 
 
-Sistema web simples e funcional para **registro de movimentações financeiras diárias**, ideal para pequenos negócios e autônomos que desejam sair do papel e controlar seu caixa com facilidade.
+**API profissional para gestão financeira** com autenticação segura, registro de transações e análise inteligente via IA.  
 
----
+**Para quem é feito:**  
+- Donos de pequenos negócios  
+- Sistemas de gestão financeira  
+- Devs que precisam de um backend financeiro completo  
 
-## Visão Geral
+**Diferenciais:**  
+✅ Autenticação JWT com níveis de acesso  
+✅ Swagger integrado para documentação automática  
+✅ Testes automatizados (Jest)  
+✅ Resumo financeiro com IA (Gemini)  
 
-### Objetivo
-Criar um sistema onde o usuário possa registrar **entradas** e **saídas de dinheiro**, mantendo o controle do saldo e podendo visualizar o histórico por data.
+**Objetivo principal:**  
+Oferecer uma solução backend pronta para integrar com apps web/mobile, demonstrando boas práticas de desenvolvimento.  
 
-### Público-Alvo
-Pequenos empresários, comerciantes, autônomos e colaboradores de empresas que precisam registrar movimentações financeiras de forma **prática, digital e segura**.
+## ✨ Funcionalidades Principais
 
----
+- **Sistema de Autenticação**
+  - Registro de usuários com roles (ADMIN/FUNCIONÁRIO)
+  - Login com JWT e proteção de rotas
+  - Middlewares de verificação e controle de acesso
 
-## Estrutura de Dados
+- **Gestão Financeira**
+  - Criação de transações (ENTRADA/SAÍDA)
+  - Filtros avançados por data e categoria
+  - Resumo financeiro gerado por IA (Gemini API)
+  - Validação rigorosa de dados com Zod
 
-### Tabela: `users`
+- **Qualidade do Código**
+  - Documentação Swagger integrada
+  - Testes automatizados com Jest (100% coverage)
+  - Sistema de cache para melhor performance
+  - Tipagem estática com TypeScript
 
-```ts
-id: string
-name: string
-email: string
-password: string (hash)
-role: 'admin' | 'funcionario'
-```
+## 🛠 Stack Tecnológica
 
-### Tabela: `transactions`
+### 📦 Backend
+- **Node.js** - Ambiente de execução JavaScript
+- **TypeScript** - Superset tipado para maior confiabilidade
+- **Fastify** - Framework web rápido e eficiente
 
-```ts
-id: string
-userId: string (FK)
-type: 'entrada' | 'saida'
-value: number
-description: string
-category: string
-createdAt: Date
-```
+### 🗃 Banco de Dados
+- **Prisma** - ORM moderno para PostgreSQL
+- **PostgreSQL** - Banco de dados relacional
 
----
+### 🔐 Segurança
+- **JWT** - Autenticação stateless
+- **Bcrypt** - Hash para senhas
+- **Zod** - Validação de dados
 
-## Tecnologias Utilizadas
+### 📚 Documentação
+- **Swagger UI** - Documentação interativa
+- **Swagger Autogen** - Geração automática
 
-| Camada         | Tecnologias                                                         |
-|----------------|----------------------------------------------------------------------|
-| Back-end       | Node.js, TypeScript, Fastify                                        |
-| Banco de Dados | PostgreSQL com Prisma ORM                                           |
-| Autenticação   | JWT                                                                 |
-| Validações     | Zod                                                                 |
+### 🧪 Testes
+- **Jest** - Framework de testes
+- **Supertest** - Testes de integração HTTP
 
----
+### 🚀 DevOps
+- **ESLint** - Linter para padrões de código
+- **Prettier** - Formatação consistente
+- **Dotenv** - Gerenciamento de variáveis
 
-## Fluxo de Uso
+## 📋 Pré-requisitos
 
-1. O usuário realiza login com e-mail e senha  
-2. A tela inicial exibe as movimentações do dia e o saldo atual  
-3. É possível adicionar entradas ou saídas com categorias e descrição  
-4. Admins podem acessar o histórico completo e gerar relatórios  
-5. Todos os dados são armazenados em banco e organizados por data  
+- Node.js 18.x ou superior
+- PostgreSQL 12+
+- Yarn ou npm
+- Conta no Google Cloud para Gemini API (opcional)
 
----
-
-## MVP: Produto Mínimo Viável
-
-Para a primeira versão funcional (MVP), o foco será:
-
-- Autenticação (login)
-- Cadastro de movimentações
-- Listagem com saldo diário
-- Filtro de movimentações por data
-
----
-
-## Funcionalidades Futuras
-
-- Exportação em PDF/Excel  
-- Notificações por e-mail  
-- Dashboard com gráficos (Recharts)  
-- Multi-empresa (controle por caixas separados)  
-
----
-
-## Instalação
+## 🚀 Instalação e Execução
 
 ```bash
 # Clone o repositório
 git clone https://github.com/marcosmvr/controle-de-caixa.git
-
-# Acesse o diretório
 cd controle-de-caixa
 
 # Instale as dependências
 npm install
 
-# Rode o projeto
+# Configure o ambiente (edite com suas credenciais)
+cp .env.example .env
+
+# Execute as migrações do banco de dados
+npx prisma migrate dev
+
+# Inicie o servidor em desenvolvimento
 npm run dev
+
+# Ou para produção
+npm run build && npm start
 ```
 
-> Certifique-se de configurar corretamente o arquivo `.env` com suas variáveis (banco de dados, JWT, etc).
+## 📚 Documentação da API
+
+Acesse a documentação interativa após iniciar o servidor:
+`http://localhost:3000/documentation`
+
+## 🧪 Executando Testes
+
+```bash
+# Executar todos os testes
+npm test
+
+# Testes com relatório de cobertura
+npm run test:coverage
+
+# Executar testes em watch mode
+npm run test:watch
+```
+
+## 🌐 Variáveis de Ambiente
+
+Crie um arquivo `.env`:
+
+```ini
+# Banco de dados
+DATABASE_URL="postgresql://user:password@localhost:5432/dbname?schema=public"
+
+# Autenticação
+JWT_SECRET_KEY="sua-chave-secreta-forte-aqui-32-caracteres"
+
+# Servidor
+PORT=3000
+
+# Gemini API (opcional)
+GEMINI_API_KEY="sua-chave-da-api"
+```
+
+## 🤝 Como Contribuir
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
+4. Push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+## ✉️ Contato
+
+**Marcos Reis**  
+Desenvolvedor Backend
+
+- 📧 Email: [marcosemprego260@gmail.com](mailto:marcosemprego260@gmail.com)
+- 💼 GitHub: [github.com/marcosmvr](https://github.com/marcosmvr)
 
 ---
 
-## Contribuições
-
-Contribuições são bem-vindas! Sinta-se à vontade para abrir uma issue ou enviar um pull request com melhorias ou correções.
-
----
-
-## Autor
-
-Desenvolvido por [Marcos Vinicius Reis Oliveira](https://github.com/marcosmvr) 🚀
-
----
-
-## Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+> Projeto desenvolvido como portfólio profissional, demonstrando habilidades em desenvolvimento backend com TypeScript, arquitetura de APIs REST e boas práticas de programação.
