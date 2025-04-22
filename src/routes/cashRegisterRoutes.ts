@@ -6,6 +6,7 @@ import { onlyAdmin } from '../middlewares/onlyAdmin'
 import { filterByDateAndCategory } from '../middlewares/filterByDateAndCategory'
 import { TransactionQuery } from '../middlewares/transactionQuery'
 import { GeminiService } from '../services/geminiService'
+import cache from '../middlewares/cache'
 
 const prisma = new PrismaClient()
 
@@ -173,35 +174,147 @@ export async function cashRegisterRoute(app: FastifyInstance) {
 
   app.get<{ Querystring: TransactionQuery }>(
     '/transactions/summary',
-    { preHandler: [verifyJWT, onlyAdmin] },
-    async (request, reply) => {
-      const querySchema = z.object({
-        startDate: z.string().datetime().optional(),
-        endDate: z.string().datetime().optional(),
-        category: z.string().max(50).optional(),
-      })
-
-      const { startDate, endDate, category } = querySchema.parse(request.query)
-
-      const transactions = await prisma.transaction.findMany({
-        where: {
-          createdAt: {
-            gte: startDate ? new Date(startDate) : undefined,
-            lte: endDate ? new Date(endDate) : undefined,
+    {
+      preHandler: [verifyJWT, onlyAdmin],
+      schema: {
+        tags: ['transactions'],
+        summary: 'Resumo financeiro gerado por IA',
+        description:
+          'Retorna um resumo inteligente das transações no período (apenas admin)',
+        security: [{ bearerAuth: [] }],
+        querystring: {
+          type: 'object',
+          properties: {
+            startDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Data inicial (ISO8601)',
+              examples: ['2024-01-01T00:00:00Z'],
+            },
+            endDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Data final (ISO8601)',
+              examples: ['2024-12-31T23:59:59Z'],
+            },
+            category: {
+              type: 'string',
+              description: 'Filtrar por categoria',
+              examples: ['Vendas', 'Serviços'],
+            },
           },
-          category: category ? category : undefined,
         },
-        orderBy: { createdAt: 'asc' },
-      })
+        response: {
+          200: {
+            description: 'Resumo gerado por IA',
+            type: 'object',
+            properties: {
+              period: {
+                type: 'object',
+                properties: {
+                  startDate: { type: 'string', format: 'date-time' },
+                  endDate: { type: 'string', format: 'date-time' },
+                },
+              },
+              summary: { type: 'string' },
+            },
+            examples: [
+              {
+                period: {
+                  startDate: '2024-01-01T00:00:00Z',
+                  endDate: '2024-01-31T23:59:59Z',
+                },
+                summary: 'No período de janeiro/2024, houve 15 transações...',
+              },
+            ],
+          },
+          400: { description: 'Parâmetros inválidos' },
+          401: { description: 'Token inválido ou ausente' },
+          403: { description: 'Acesso negado (requer perfil admin)' },
+          500: { description: 'Erro ao gerar resumo com IA' },
+        },
+      },
+    },
+    async (request, reply) => {
+      try {
+        // Validação refinada
+        const querySchema = z.object({
+          startDate: z
+            .string()
+            .datetime({ offset: true })
+            .optional()
+            .transform(s => (s ? new Date(s) : undefined)),
+          endDate: z
+            .string()
+            .datetime({ offset: true })
+            .optional()
+            .transform(s => (s ? new Date(s) : undefined)),
+          category: z.string().max(50).optional(),
+        })
 
-      const summary = await new GeminiService().generateFinancialSummary(
-        transactions,
-      )
+        const { startDate, endDate, category } = querySchema.parse(
+          request.query,
+        )
 
-      return reply.status(200).send({
-        period: { startDate, endDate },
-        summary,
-      })
+        // Validação adicional de datas
+        if (startDate && endDate && startDate > endDate) {
+          return reply
+            .status(400)
+            .send({ error: 'Data inicial maior que data final' })
+        }
+
+        const transactions = await prisma.transaction.findMany({
+          where: {
+            createdAt: {
+              gte: startDate,
+              lte: endDate,
+            },
+            category: category || undefined,
+          },
+          select: {
+            value: true,
+            transactionType: true,
+            category: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: 'asc' },
+        })
+
+        // Cache opcional (melhor performance)
+        const cacheKey = `summary-${startDate}-${endDate}-${category}`
+        const cachedSummary = await cache.get(cacheKey)
+
+        if (cachedSummary) {
+          return reply.status(200).send({
+            period: { startDate, endDate },
+            summary: cachedSummary,
+            cached: true,
+          })
+        }
+
+        const summary = await new GeminiService().generateFinancialSummary(
+          transactions,
+        )
+
+        // Armazena em cache por 1 hora
+        await cache.set(cacheKey, summary, 3600)
+
+        return reply.status(200).send({
+          period: { startDate, endDate },
+          summary,
+        })
+      } catch (error) {
+        request.log.error('Erro no resumo com IA:', error)
+
+        if (error instanceof z.ZodError) {
+          return reply.status(400).send({
+            error: 'Dados inválidos',
+            details: error.errors,
+          })
+        }
+
+        throw error // Será tratado pelo errorHandler
+      }
     },
   )
 }
