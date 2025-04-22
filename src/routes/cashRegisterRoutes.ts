@@ -80,23 +80,94 @@ export async function cashRegisterRoute(app: FastifyInstance) {
 
   app.get(
     '/transactions',
-    { preHandler: [verifyJWT, onlyAdmin, filterByDateAndCategory] },
-    async (request, reply) => {
-      const transactions = await prisma.transaction.findMany({
-        where: request.filter,
-        select: {
-          id: true,
-          value: true,
-          transactionType: true,
-          category: true,
-          createdAt: true,
+    {
+      preHandler: [verifyJWT, onlyAdmin, filterByDateAndCategory],
+      schema: {
+        tags: ['transactions'],
+        summary: 'Lista todas as transações',
+        description: 'Retorna transações filtradas por período (apenas admin)',
+        security: [{ bearerAuth: [] }],
+        querystring: {
+          type: 'object',
+          properties: {
+            startDate: {
+              type: 'string',
+              format: 'date',
+              description: 'Data inicial (YYYY-MM-DD)',
+              examples: ['2024-01-01'],
+            },
+            endDate: {
+              type: 'string',
+              format: 'date',
+              description: 'Data final (YYYY-MM-DD)',
+              examples: ['2024-12-31'],
+            },
+            category: {
+              type: 'string',
+              examples: ['Vendas', 'Produtos'],
+            },
+          },
         },
-        orderBy: { createdAt: 'desc' },
-      })
-      return reply.status(200).send({
-        count: transactions.length,
-        data: transactions,
-      })
+        response: {
+          200: {
+            description: 'Lista de transações',
+            type: 'object',
+            properties: {
+              count: { type: 'number', example: 5 },
+              data: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'string',
+                      example: 'clk1a2b3c000008mk5q1q2r3s',
+                    },
+                    value: { type: 'number', example: 150.75 },
+                    transactionType: { type: 'string', example: 'SAIDA' },
+                    category: { type: 'string', example: 'Vendas' },
+                    createdAt: {
+                      type: 'string',
+                      format: 'date-time',
+                      example: '2024-01-01T00:00:00Z',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: { description: 'Parâmetros inválidos' },
+          401: { description: 'Token inválido ou ausente' },
+          403: { description: 'Acesso negado (requer perfil admin)' },
+          500: { description: 'Erro interno no servidor' },
+        },
+      },
+    },
+    async (request, reply) => {
+      try {
+        const transactions = await prisma.transaction.findMany({
+          where: request.filter,
+          select: {
+            id: true,
+            value: true,
+            transactionType: true,
+            category: true,
+            createdAt: true,
+          },
+          orderBy: { createdAt: 'desc' },
+        })
+
+        return reply.status(200).send({
+          count: transactions.length,
+          data: transactions.map(t => ({
+            ...t,
+            createdAt: t.createdAt.toISOString(), // Garante formato ISO
+          })),
+        })
+      } catch (error) {
+        request.log.error('Erro ao buscar transações:', error)
+        throw error // Será capturado pelo errorHandler
+      }
     },
   )
 

@@ -23,16 +23,16 @@ app.register(fastifySwagger, {
         bearerAuth: {
           type: 'http',
           scheme: 'bearer',
-          bearerFormat: 'JWT'
-        }
-      }
+          bearerFormat: 'JWT',
+        },
+      },
     },
     tags: [
       { name: 'auth', description: 'Autenticação' },
       { name: 'transactions', description: 'Gestão Financeira' },
     ],
   },
-  hideUntagged: true
+  hideUntagged: true,
 })
 
 app.register(fastifySwaggerUi, {
@@ -40,6 +40,7 @@ app.register(fastifySwaggerUi, {
   uiConfig: {
     docExpansion: 'list',
     deepLinking: true,
+    tryItOutEnabled: true,
   },
   staticCSP: true,
 })
