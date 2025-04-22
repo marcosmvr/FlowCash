@@ -1,10 +1,12 @@
 import { PrismaClient } from '../prisma/generated/prisma/'
-import { FastifyInstance, FastifyRequest } from 'fastify'
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import { z } from 'zod'
 import { verifyJWT } from '../middlewares/verifyJWT'
 import { onlyAdmin } from '../middlewares/onlyAdmin'
 import { filterByDateAndCategory } from '../middlewares/filterByDateAndCategory'
 import { TransactionQuery } from '../middlewares/transactionQuery'
+import { on } from 'events'
+import { GeminiService } from '../services/geminiService'
 
 const prisma = new PrismaClient()
 
@@ -74,6 +76,37 @@ export async function cashRegisterRoute(app: FastifyInstance) {
       } catch (error) {
         console.error('Erro: ', error)
         reply.status(500).send({ error: 'Erro ao listar transações' })
+      }
+    },
+  )
+
+  app.get<{ Querystring: TransactionQuery }>(
+    '/transactions/summary',
+    { preHandler: [verifyJWT, onlyAdmin] },
+    async (request, reply) => {
+      try {
+        const { startDate, endDate, category } = request.query
+
+        const transactions = await prisma.transaction.findMany({
+          where: {
+            createdAt: {
+              gte: startDate ? new Date(startDate) : undefined,
+              lte: endDate ? new Date(endDate) : undefined,
+            },
+            category: category ? category : undefined,
+          },
+          orderBy: { createdAt: 'asc' },
+        })
+
+        const geminiService = new GeminiService()
+        const summary = await geminiService.generateFinancialSummary(
+          transactions,
+        )
+
+        reply.status(200).send({ summary })
+      } catch (error) {
+        console.error('Erro:', error)
+        reply.status(500).send({ error: 'Erro ao gerar resumo' })
       }
     },
   )

@@ -8,7 +8,9 @@ export class GeminiService {
   }
 
   async generateFinancialSummary(transactions: any[]): Promise<string> {
-    const model = this.genAI.getGenerativeModel({ model: 'gemini-pro' })
+    const model = this.genAI.getGenerativeModel({
+      model: 'gemini-1.5-pro-latest',
+    })
 
     const prompt = `Analise estas transações financeiras e responda em português:
     1. Saldo total (entradas - saídas)
@@ -19,11 +21,11 @@ export class GeminiService {
     Dados (formato JSON): ${JSON.stringify(transactions, null, 2)}`
 
     try {
-        const result = await model.generateContent(prompt)
-        return result.response.text()
+      const result = await model.generateContent(prompt)
+      return result.response.text()
     } catch (error) {
-        console.error("Erro no gemini:", error)
-        return "Não foi possivel gerar o resumo"
+      console.error('Erro no gemini:', error)
+      return 'Não foi possivel gerar o resumo'
     }
   }
 }
