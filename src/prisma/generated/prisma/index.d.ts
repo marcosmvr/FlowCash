@@ -2326,7 +2326,7 @@ export namespace Prisma {
     value: number
     transactionType: $Enums.TransactionType
     category: string
-    description: string
+    description: string | null
     userId: number
     createdAt: Date
     _count: TransactionCountAggregateOutputType | null
@@ -2414,7 +2414,7 @@ export namespace Prisma {
       value: number
       transactionType: $Enums.TransactionType
       category: string
-      description: string
+      description: string | null
       userId: number
       createdAt: Date
     }, ExtArgs["result"]["transaction"]>
@@ -3317,6 +3317,14 @@ export namespace Prisma {
   export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
+  export const NullsOrder: {
+    first: 'first',
+    last: 'last'
+  };
+
+  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
   /**
    * Field references
    */
@@ -3479,7 +3487,7 @@ export namespace Prisma {
     value?: FloatFilter<"Transaction"> | number
     transactionType?: EnumTransactionTypeFilter<"Transaction"> | $Enums.TransactionType
     category?: StringFilter<"Transaction"> | string
-    description?: StringFilter<"Transaction"> | string
+    description?: StringNullableFilter<"Transaction"> | string | null
     userId?: IntFilter<"Transaction"> | number
     createdAt?: DateTimeFilter<"Transaction"> | Date | string
     User?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -3490,7 +3498,7 @@ export namespace Prisma {
     value?: SortOrder
     transactionType?: SortOrder
     category?: SortOrder
-    description?: SortOrder
+    description?: SortOrderInput | SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
     User?: UserOrderByWithRelationInput
@@ -3504,7 +3512,7 @@ export namespace Prisma {
     value?: FloatFilter<"Transaction"> | number
     transactionType?: EnumTransactionTypeFilter<"Transaction"> | $Enums.TransactionType
     category?: StringFilter<"Transaction"> | string
-    description?: StringFilter<"Transaction"> | string
+    description?: StringNullableFilter<"Transaction"> | string | null
     userId?: IntFilter<"Transaction"> | number
     createdAt?: DateTimeFilter<"Transaction"> | Date | string
     User?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -3515,7 +3523,7 @@ export namespace Prisma {
     value?: SortOrder
     transactionType?: SortOrder
     category?: SortOrder
-    description?: SortOrder
+    description?: SortOrderInput | SortOrder
     userId?: SortOrder
     createdAt?: SortOrder
     _count?: TransactionCountOrderByAggregateInput
@@ -3533,7 +3541,7 @@ export namespace Prisma {
     value?: FloatWithAggregatesFilter<"Transaction"> | number
     transactionType?: EnumTransactionTypeWithAggregatesFilter<"Transaction"> | $Enums.TransactionType
     category?: StringWithAggregatesFilter<"Transaction"> | string
-    description?: StringWithAggregatesFilter<"Transaction"> | string
+    description?: StringNullableWithAggregatesFilter<"Transaction"> | string | null
     userId?: IntWithAggregatesFilter<"Transaction"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Transaction"> | Date | string
   }
@@ -3606,7 +3614,7 @@ export namespace Prisma {
     value: number
     transactionType: $Enums.TransactionType
     category: string
-    description: string
+    description?: string | null
     createdAt?: Date | string
     User: UserCreateNestedOneWithoutTransactionsInput
   }
@@ -3616,7 +3624,7 @@ export namespace Prisma {
     value: number
     transactionType: $Enums.TransactionType
     category: string
-    description: string
+    description?: string | null
     userId: number
     createdAt?: Date | string
   }
@@ -3625,7 +3633,7 @@ export namespace Prisma {
     value?: FloatFieldUpdateOperationsInput | number
     transactionType?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
     category?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     User?: UserUpdateOneRequiredWithoutTransactionsNestedInput
   }
@@ -3635,7 +3643,7 @@ export namespace Prisma {
     value?: FloatFieldUpdateOperationsInput | number
     transactionType?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
     category?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -3645,7 +3653,7 @@ export namespace Prisma {
     value: number
     transactionType: $Enums.TransactionType
     category: string
-    description: string
+    description?: string | null
     userId: number
     createdAt?: Date | string
   }
@@ -3654,7 +3662,7 @@ export namespace Prisma {
     value?: FloatFieldUpdateOperationsInput | number
     transactionType?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
     category?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -3663,7 +3671,7 @@ export namespace Prisma {
     value?: FloatFieldUpdateOperationsInput | number
     transactionType?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
     category?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -3833,9 +3841,29 @@ export namespace Prisma {
     not?: NestedEnumTransactionTypeFilter<$PrismaModel> | $Enums.TransactionType
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
   }
 
   export type TransactionCountOrderByAggregateInput = {
@@ -3904,6 +3932,24 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTransactionTypeFilter<$PrismaModel>
     _max?: NestedEnumTransactionTypeFilter<$PrismaModel>
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type TransactionCreateNestedManyWithoutUserInput = {
@@ -3984,6 +4030,10 @@ export namespace Prisma {
 
   export type EnumTransactionTypeFieldUpdateOperationsInput = {
     set?: $Enums.TransactionType
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
   }
 
   export type UserUpdateOneRequiredWithoutTransactionsNestedInput = {
@@ -4112,6 +4162,20 @@ export namespace Prisma {
     not?: NestedEnumTransactionTypeFilter<$PrismaModel> | $Enums.TransactionType
   }
 
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
     in?: number[] | ListFloatFieldRefInput<$PrismaModel>
@@ -4138,11 +4202,39 @@ export namespace Prisma {
     _max?: NestedEnumTransactionTypeFilter<$PrismaModel>
   }
 
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type TransactionCreateWithoutUserInput = {
     value: number
     transactionType: $Enums.TransactionType
     category: string
-    description: string
+    description?: string | null
     createdAt?: Date | string
   }
 
@@ -4151,7 +4243,7 @@ export namespace Prisma {
     value: number
     transactionType: $Enums.TransactionType
     category: string
-    description: string
+    description?: string | null
     createdAt?: Date | string
   }
 
@@ -4189,7 +4281,7 @@ export namespace Prisma {
     value?: FloatFilter<"Transaction"> | number
     transactionType?: EnumTransactionTypeFilter<"Transaction"> | $Enums.TransactionType
     category?: StringFilter<"Transaction"> | string
-    description?: StringFilter<"Transaction"> | string
+    description?: StringNullableFilter<"Transaction"> | string | null
     userId?: IntFilter<"Transaction"> | number
     createdAt?: DateTimeFilter<"Transaction"> | Date | string
   }
@@ -4249,7 +4341,7 @@ export namespace Prisma {
     value: number
     transactionType: $Enums.TransactionType
     category: string
-    description: string
+    description?: string | null
     createdAt?: Date | string
   }
 
@@ -4257,7 +4349,7 @@ export namespace Prisma {
     value?: FloatFieldUpdateOperationsInput | number
     transactionType?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
     category?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -4266,7 +4358,7 @@ export namespace Prisma {
     value?: FloatFieldUpdateOperationsInput | number
     transactionType?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
     category?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -4275,7 +4367,7 @@ export namespace Prisma {
     value?: FloatFieldUpdateOperationsInput | number
     transactionType?: EnumTransactionTypeFieldUpdateOperationsInput | $Enums.TransactionType
     category?: StringFieldUpdateOperationsInput | string
-    description?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

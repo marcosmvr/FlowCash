@@ -5,7 +5,6 @@ import { verifyJWT } from '../middlewares/verifyJWT'
 import { onlyAdmin } from '../middlewares/onlyAdmin'
 import { filterByDateAndCategory } from '../middlewares/filterByDateAndCategory'
 import { TransactionQuery } from '../middlewares/transactionQuery'
-import { on } from 'events'
 import { GeminiService } from '../services/geminiService'
 
 const prisma = new PrismaClient()
@@ -17,16 +16,12 @@ export async function cashRegisterRoute(app: FastifyInstance) {
     async (request, reply) => {
       const userId = request.user.userId
       const createTransactionBody = z.object({
-        value: z.number(),
+        value: z.number().positive().max(1_000_000),
         transactionType: z.enum(['ENTRADA', 'SAIDA']),
-        category: z.string(),
-        description: z.string(),
-        createdAt: z.string().transform(str => {
-          const date = new Date(str)
-          if (isNaN(date.getTime())) {
-            throw new Error('Data inválida')
-          }
-          return date
+        category: z.string().max(50),
+        description: z.string().max(200).optional().default(''),
+        createdAt: z.coerce.date().refine(date => date <= new Date(), {
+          message: 'Data não pode ser futura',
         }),
       })
 
@@ -41,7 +36,7 @@ export async function cashRegisterRoute(app: FastifyInstance) {
             value,
             transactionType,
             category,
-            description,
+            description: description || '',
             createdAt,
             userId,
           },

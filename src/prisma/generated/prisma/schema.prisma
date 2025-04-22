@@ -29,7 +29,7 @@ model Transaction {
   value           Float
   transactionType TransactionType
   category        String
-  description     String
+  description     String?
   userId          Int
   createdAt       DateTime        @default(now())
   User            User            @relation(fields: [userId], references: [id])
