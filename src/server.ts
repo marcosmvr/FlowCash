@@ -3,12 +3,37 @@ import { cashRegisterRoute } from './routes/cashRegisterRoutes'
 import { authRoutes } from './routes/cashRegisterAuthRoutes'
 import { errorHandler } from './middlewares/errorHandler'
 import dotenv from 'dotenv'
-import { time } from 'console'
+import fastifySwagger from '@fastify/swagger'
+import fastifySwaggerUi from '@fastify/swagger-ui'
 
 dotenv.config()
 const app = fastify({ logger: true })
 
 app.setErrorHandler(errorHandler)
+
+app.register(fastifySwagger, {
+  openapi: {
+    info: {
+      title: 'API Controle De Caixa',
+      description: 'Documentação da API do seu sistema financeiro',
+      version: '1.0.0',
+    },
+    tags: [
+      { name: 'auth', description: 'Autenticação' },
+      { name: 'transactions', description: 'Gestão Financeira' },
+    ],
+  },
+})
+
+app.register(fastifySwaggerUi, {
+  routePrefix: '/documentation',
+  uiConfig: {
+    docExpansion: 'list',
+    deepLinking: true
+  },
+  staticCSP: true
+})
+
 app.register(require('@fastify/helmet'))
 app.register(require('@fastify/rate-limit'), {
   max: 100,
