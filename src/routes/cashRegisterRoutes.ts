@@ -27,8 +27,6 @@ export async function cashRegisterRoute(app: FastifyInstance) {
       const { value, transactionType, category, description, createdAt } =
         createTransactionBody.parse(request.body)
       console.log(request.body)
-      const userId = request.user.userId
-
       const transaction = await prisma.transaction.create({
         data: {
           value,
