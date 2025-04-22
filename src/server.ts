@@ -18,20 +18,30 @@ app.register(fastifySwagger, {
       description: 'Documentação da API do seu sistema financeiro',
       version: '1.0.0',
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT'
+        }
+      }
+    },
     tags: [
       { name: 'auth', description: 'Autenticação' },
       { name: 'transactions', description: 'Gestão Financeira' },
     ],
   },
+  hideUntagged: true
 })
 
 app.register(fastifySwaggerUi, {
   routePrefix: '/documentation',
   uiConfig: {
     docExpansion: 'list',
-    deepLinking: true
+    deepLinking: true,
   },
-  staticCSP: true
+  staticCSP: true,
 })
 
 app.register(require('@fastify/helmet'))

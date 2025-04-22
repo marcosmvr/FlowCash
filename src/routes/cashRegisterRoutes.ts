@@ -12,16 +12,49 @@ const prisma = new PrismaClient()
 export async function cashRegisterRoute(app: FastifyInstance) {
   app.post(
     '/transaction',
-    { preHandler: [verifyJWT] },
+    {
+      preHandler: [verifyJWT],
+      schema: {
+        tags: ['transactions'],
+        security: [{ bearerAuth: [] }],
+        summary: 'Cria uma nova transação financeira',
+        description: 'Registra entradas (depósitos) ou saídas (gastos)',
+        body: {
+          type: 'object',
+          properties: {
+            value: { type: 'number', examples: [1700.76] },
+            transactionType: {
+              type: 'string',
+              enum: ['ENTRADA', 'SAIDA'],
+            },
+            category: { type: 'string', examples: ['Vendas'] },
+          },
+        },
+        response: {
+          201: {
+            description: 'Transação criada com sucesso',
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              message: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
     async (request, reply) => {
       const createTransactionBody = z.object({
         value: z.number().positive().max(1_000_000),
         transactionType: z.enum(['ENTRADA', 'SAIDA']),
         category: z.string().max(50),
         description: z.string().max(200).optional().default(''),
-        createdAt: z.coerce.date().refine(date => date <= new Date(), {
-          message: 'Data não pode ser futura',
-        }),
+        createdAt: z.coerce
+          .date()
+          .optional()
+          .default(new Date())
+          .refine(date => date <= new Date(), {
+            message: 'Data não pode ser futura',
+          }),
       })
 
       const { value, transactionType, category, description, createdAt } =
