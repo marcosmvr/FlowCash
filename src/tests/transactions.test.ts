@@ -3,7 +3,6 @@ import supertest from 'supertest'
 import { cashRegisterRoute } from '../routes/cashRegisterRoutes'
 import { authRoutes } from '../routes/cashRegisterAuthRoutes'
 import { PrismaClient } from '../prisma/generated/prisma'
-import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -11,7 +10,6 @@ dotenv.config()
 describe('Rotas do Caixa', () => {
   const app = fastify()
   const prisma = new PrismaClient()
-  const secret = process.env.JWT_SECRET_KEY // Agora usa a variável de ambiente
 
   let tokenFuncionario = ''
   let tokenAdmin = ''
@@ -21,7 +19,6 @@ describe('Rotas do Caixa', () => {
     app.register(cashRegisterRoute, { prefix: '/cash-register' })
 
     await app.ready()
-
     await prisma.transaction.deleteMany()
     await prisma.user.deleteMany()
 
@@ -30,7 +27,7 @@ describe('Rotas do Caixa', () => {
     await supertest(app.server).post('/cash-register/register').send({
       name: 'Funcionario',
       email: emailFuncionario,
-      password: '123456',
+      password: '12345678',
       role: 'FUNCIONARIO',
     })
 
@@ -39,11 +36,8 @@ describe('Rotas do Caixa', () => {
       .post('/cash-register/login')
       .send({
         email: emailFuncionario,
-        password: '123456',
+        password: '12345678',
       })
-
-    // Verifica o token e loga
-    console.log('Token do FUNCIONÁRIO: ', loginFunc.body.token)
     tokenFuncionario = loginFunc.body.token
 
     // Cria ADMIN
@@ -51,7 +45,7 @@ describe('Rotas do Caixa', () => {
     await supertest(app.server).post('/cash-register/register').send({
       name: 'Admin',
       email: emailAdmin,
-      password: 'admin123',
+      password: '12345678',
       role: 'ADMIN',
     })
 
@@ -60,63 +54,54 @@ describe('Rotas do Caixa', () => {
       .post('/cash-register/login')
       .send({
         email: emailAdmin,
-        password: 'admin123',
+        password: '12345678',
       })
-
-    // Verifica o token e loga
-    console.log('Token do ADMIN: ', loginAdm.body.token)
     tokenAdmin = loginAdm.body.token
   })
 
   afterAll(async () => {
+    await prisma.$disconnect()
     await app.close()
   })
 
-  it('FUNCIONÁRIO deve conseguir criar uma transação', async () => {
-    const response = await supertest(app.server)
-      .post('/cash-register/transaction')
-      .send({
-        value: 100,
-        transactionType: 'ENTRADA',
-        category: 'Vendas',
-        description: 'Venda de produto',
-        createdAt: new Date().toISOString(),
-      })
-      .set('Authorization', `Bearer ${tokenFuncionario}`) // Passando o token no cabeçalho
+  describe('POST /transaction', () => {
+    it('FUNCIONÁRIO deve conseguir criar uma transação', async () => {
+      const response = await supertest(app.server)
+        .post('/cash-register/transaction')
+        .send({
+          value: 100,
+          transactionType: 'ENTRADA',
+          category: 'Vendas',
+          description: 'Venda de produto',
+        })
+        .set('Authorization', `Bearer ${tokenFuncionario}`)
 
-    console.log(
-      'Resposta do FUNCIONÁRIO para criação de transação: ',
-      response.body,
-    )
-
-    expect(response.status).toBe(200)
-    expect(response.body.message).toBe('Transação criada com sucesso!')
+      expect(response.status).toBe(201)
+      expect(response.body).toHaveProperty(
+        'message',
+        'Transação criada com sucesso!',
+      )
+    })
   })
 
-  it('ADMIN deve listar as transações com sucesso', async () => {
-    const response = await supertest(app.server)
-      .get('/cash-register/transactions')
-      .set('Authorization', `Bearer ${tokenAdmin}`) // Passando o token no cabeçalho
+  describe('GET /transactions', () => {
+    it('ADMIN deve listar as transações com sucesso', async () => {
+      const response = await supertest(app.server)
+        .get('/cash-register/transactions')
+        .set('Authorization', `Bearer ${tokenAdmin}`)
 
-    console.log(
-      'Resposta do ADMIN para listagem de transações: ',
-      response.body,
-    )
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveProperty('count')
+      expect(response.body).toHaveProperty('data')
+      expect(Array.isArray(response.body.data)).toBe(true)
+    })
 
-    expect(response.status).toBe(200)
-    expect(Array.isArray(response.body)).toBe(true)
-  })
+    it('FUNCIONÁRIO não pode listar transações', async () => {
+      const response = await supertest(app.server)
+        .get('/cash-register/transactions')
+        .set('Authorization', `Bearer ${tokenFuncionario}`)
 
-  it('FUNCIONÁRIO não pode listar transações (sem permissão)', async () => {
-    const response = await supertest(app.server)
-      .get('/cash-register/transactions')
-      .set('Authorization', `Bearer ${tokenFuncionario}`) // Passando o token do FUNCIONÁRIO
-
-    console.log(
-      'Resposta do FUNCIONÁRIO para listar transações (esperado erro 403): ',
-      response.body,
-    )
-
-    expect(response.status).toBe(403) // Espera erro 403 por falta de permissão
+      expect(response.status).toBe(403)
+    })
   })
 })
