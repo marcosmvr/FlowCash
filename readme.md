@@ -4,7 +4,7 @@
 <div align="center">
 
 
-# CONTROLE-DE-CAIXA
+# FlowCash
 
 <em>Sistema de gerenciamento financeiro com autenticação de usuários e análise de transações</em>
 
