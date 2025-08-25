@@ -14,8 +14,8 @@ app.setErrorHandler(errorHandler)
 app.register(fastifySwagger, {
   openapi: {
     info: {
-      title: 'API Controle De Caixa',
-      description: 'Documentação da API do seu sistema financeiro',
+      title: 'API Flow Cash',
+      description: 'Documentação da API do FlowCash',
       version: '1.0.0',
     },
     components: {
@@ -23,8 +23,8 @@ app.register(fastifySwagger, {
         bearerAuth: {
           type: 'http',
           scheme: 'bearer',
-          bearerFormat: 'JWT'
-        }
+          bearerFormat: 'JWT',
+        },
       },
       schemas: {
         User: {
@@ -32,27 +32,35 @@ app.register(fastifySwagger, {
           properties: {
             id: { type: 'string', example: 'clk1a2b3c000008mk5q1q2r3s' },
             name: { type: 'string', example: 'Marcos Reis' },
-            email: { type: 'string', format: 'email', example: 'marcos@empresa.com' },
-            role: { type: 'string', enum: ['ADMIN', 'FUNCIONARIO'], example: 'FUNCIONARIO' },
-            createdAt: { 
-              type: 'string', 
+            email: {
+              type: 'string',
+              format: 'email',
+              example: 'marcos@empresa.com',
+            },
+            role: {
+              type: 'string',
+              enum: ['ADMIN', 'FUNCIONARIO'],
+              example: 'FUNCIONARIO',
+            },
+            createdAt: {
+              type: 'string',
               format: 'date-time',
-              example: '2024-01-01T00:00:00Z' 
-            }
-          }
-        }
-      }
+              example: '2024-01-01T00:00:00Z',
+            },
+          },
+        },
+      },
     },
     tags: [
       { name: 'auth', description: 'Autenticação' },
-      { name: 'users', description: 'Gestão de usuários' }, // Adicione esta linha
-      { name: 'transactions', description: 'Gestão Financeira' }
-    ]
-  }
-});
+      { name: 'users', description: 'Gestão de usuários' },
+      { name: 'transactions', description: 'Gestão Financeira' },
+    ],
+  },
+})
 
 app.register(fastifySwaggerUi, {
-  routePrefix: '/documentation',
+  routePrefix: '/docs',
   uiConfig: {
     docExpansion: 'list',
     deepLinking: true,

@@ -1,4 +1,4 @@
-import { PrismaClient } from '../prisma/generated/prisma/'
+import { PrismaClient } from '@prisma/client'
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import { z } from 'zod'
 import { verifyJWT } from '../middlewares/verifyJWT'
@@ -160,14 +160,14 @@ export async function cashRegisterRoute(app: FastifyInstance) {
 
         return reply.status(200).send({
           count: transactions.length,
-          data: transactions.map(t => ({
+          data: transactions.map((t: any) => ({
             ...t,
-            createdAt: t.createdAt.toISOString(), // Garante formato ISO
+            createdAt: t.createdAt.toISOString(),
           })),
         })
       } catch (error) {
         request.log.error('Erro ao buscar transações:', error)
-        throw error // Será capturado pelo errorHandler
+        throw error
       }
     },
   )
