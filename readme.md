@@ -32,7 +32,7 @@
 
 ## Visão Geral
 
-O Controle-de-Caixa é um sistema de gerenciamento financeiro desenvolvido em TypeScript com Fastify e Prisma. Ele oferece:
+O FlowCash é um sistema de gerenciamento financeiro desenvolvido em TypeScript com Fastify e Prisma. Ele oferece:
 
 - Autenticação segura de usuários com JWT
 - Gerenciamento de transações financeiras
